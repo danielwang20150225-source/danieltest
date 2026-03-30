@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Media
+*.wav
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.svg
+*.ico
+
+# Logs
+logs/
+*.log
+cron*.log
+
+# Temp files
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Build outputs
+.bin/
+output/
+ffmpeg/
+ffmpeg.zip
+
+# OpenClaw runtime (don't commit these)
+.clawhub/
+.openclaw/
+.agents/
+.claude/
+
+# Media/audio
+audio*.wav
+audio*.mp3
+
+# Test artifacts
+test_*.py
+test_*.js
+discuss.py
+screenshot*.png
+*_kimi*.png
+*_doubao*.png
+test_cat.jpg
+web_scraper.jpg
+
+# PDF/zip temp
+*.zip
+*.pdf
+
+# Lock files (workspace only, not distributable)
+lock.json
+workspace-state.json

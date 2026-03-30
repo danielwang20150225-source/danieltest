@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魔法简历 - AI简历优化工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fb;
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* Header */
+        .header { 
+            background: white; 
+            padding: 14px 24px; 
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .logo { font-size: 17px; font-weight: 600; color: #1a1a2e; }
+        .logo span { color: #667eea; }
+        
+        /* Main Grid */
+        .main { display: grid; grid-template-columns: 1fr 420px; gap: 20px; }
+        
+        /* Cards */
+        .card { 
+            background: white; 
+            border-radius: 14px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+        
+        /* Home Page */
+        .home-container { max-width: 1100px; margin: 0 auto; }
+        .home-header { text-align: center; margin-bottom: 40px; }
+        .home-logo { font-size: 36px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+        .home-logo span { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .home-slogan { font-size: 16px; color: #666; }
+        
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 32px; }
+        .input-col h3 { font-size: 16px; font-weight: 600; color: #1a1a2e; margin-bottom: 16px; }
+        
+        .upload-zone { 
+            border: 2px dashed #e0e0e0; 
+            border-radius: 12px; 
+            padding: 40px; 
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-zone:hover { border-color: #667eea; background: #f8f7ff; }
+        .upload-zone .icon { font-size: 36px; margin-bottom: 12px; }
+        .upload-zone p { color: #666; font-size: 14px; }
+        
+        textarea { 
+            width: 100%; 
+            height: 200px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 12px; 
+            padding: 16px; 
+            font-size: 14px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        textarea:focus { outline: none; border-color: #667eea; }
+        
+        .jd-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+        .jd-tab {
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            background: #f0f0f0;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .jd-tab.active { background: #667eea; color: white; }
+        
+        .btn-row { padding: 0 32px 32px; }
+        .btn { 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            font-size: 16px; 
+            font-weight: 600;
+            border-radius: 12px; 
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102,126,234,0.35); }
+        
+        .btn-desc { text-align: center; font-size: 13px; color: #999; margin-top: 12px; }
+        
+        /* Loading */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: white;
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .loading-overlay.show { display: flex; }
+        
+        .loading-text { font-size: 18px; color: #666; margin-bottom: 24px; }
+        
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .loading-quote {
+            max-width: 500px;
+            text-align: center;
+            padding: 24px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        .loading-quote .text { font-size: 18px; color: #333; font-style: italic; margin-bottom: 8px; }
+        .loading-quote .author { font-size: 14px; color: #999; }
+        
+        /* Result Page */
+        .resume-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .resume-title { font-size: 14px; font-weight: 600; color: #1f2937; }
+        
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .score { 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .btn-small {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        
+        .resume-content { padding: 24px; font-size: 14px; line-height: 1.8; color: #374151; max-height: 70vh; overflow-y: auto; }
+        .resume-content h3 { font-size: 16px; margin: 20px 0 10px; color: #111827; font-weight: 600; }
+        
+        .highlight { display: inline; }
+        .highlight-add { background: #dcfce7; padding: 1px 4px; border-radius: 3px; }
+        .highlight-mod { background: #dbeafe; padding: 1px 4px; border-radius: 3px; }
+        
+        .info-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            font-size: 10px;
+            margin-left: 4px;
+            cursor: help;
+            font-weight: 600;
+        }
+        .info-trigger.add { background: #10b981; color: white; }
+        .info-trigger.mod { background: #3b82f6; color: white; }
+        
+        /* Tooltip */
+        .tooltip-box {
+            display: none;
+            position: absolute;
+            z-index: 1000;
+            background: #1f2937;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            width: 280px;
+            line-height: 1.6;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            top: 24px;
+            left: 0;
+        }
+        .tooltip-box::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 20px;
+            border: 6px solid transparent;
+            border-bottom-color: #1f2937;
+        }
+        
+        /* Sidebar */
+        .sidebar { display: flex; flex-direction: column; gap: 16px; }
+        
+        .sidebar-card { background: white; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .sidebar-header { padding: 14px 18px; border-bottom: 1px solid #f3f4f6; }
+        .sidebar-header h4 { font-size: 13px; font-weight: 600; color: #1f2937; }
+        .sidebar-content { padding: 16px 18px; }
+        
+        .match-bars { display: flex; gap: 10px; margin-bottom: 14px; }
+        .match-bar { flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; }
+        .match-bar .count { font-size: 20px; font-weight: 700; }
+        .match-bar .label { font-size: 11px; margin-top: 2px; }
+        .match-bar.matched { background: #dcfce7; }
+        .match-bar.matched .count { color: #059669; }
+        .match-bar.migratable { background: #fef3c7; }
+        .match-bar.migratable .count { color: #d97706; }
+        .match-bar.missing { background: #fee2e2; }
+        .match-bar.missing .count { color: #dc2626; }
+        
+        .match-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag-item { padding: 3px 9px; border-radius: 12px; font-size: 11px; }
+        .tag-item.matched { background: #dcfce7; color: #059669; }
+        .tag-item.migratable { background: #fef3c7; color: #d97706; }
+        .tag-item.missing { background: #fee2e2; color: #dc2626; }
+        
+        .jd-list { font-size: 12px; }
+        .jd-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid #f3f4f6; color: #4b5563; }
+        
+        .scene2-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .scene2-btn { padding: 12px; border-radius: 8px; font-size: 12px; text-align: center; cursor: pointer; border: 1px solid #e5e7eb; background: white; }
+        .scene2-btn:hover { border-color: #667eea; background: #f8f9ff; }
+        .scene2-btn .icon { font-size: 18px; display: block; margin-bottom: 4px; }
+        
+        .followup { margin-top: 12px; padding: 10px; background: #f0f7ff; border-radius: 8px; font-size: 12px; color: #4b5563; }
+        
+        /* Tabs */
+        .page { display: none; }
+        .page.active { display: block; }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-text">AI正在深度分析你的简历...</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
+        </div>
+        <div class="loading-quote">
+            <div class="text" id="quoteText">"每一次投递都是一次机会，不要让简历成为阻碍。"</div>
+            <div class="author">—— 魔法简历</div>
+        </div>
+    </div>
+    
+    <!-- Home Page -->
+    <div class="page active" id="homePage">
+        <div class="home-container">
+            <div class="home-header">
+                <div class="home-logo">✨ <span>魔法简历</span></div>
+                <div class="home-slogan">一份匹配目标岗位的专属简历</div>
+            </div>
+            
+            <div class="card">
+                <div class="input-row">
+                    <div class="input-col">
+                        <h3>📄 上传你的简历</h3>
+                        <div class="upload-zone" id="resumeUpload">
+                            <div class="icon">📎</div>
+                            <p>点击或拖拽文件到此处</p>
+                            <p style="font-size:12px;color:#999;margin-top:6px;">支持 PDF、Word、图片格式</p>
+                            <p id="resumeFileName" style="margin-top:8px;color:#667eea;font-weight:500;"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="input-col">
+                        <h3>🎯 目标岗位JD</h3>
+                        <div class="jd-tabs">
+                            <span class="jd-tab active" data-tab="text">粘贴文字</span>
+                            <span class="jd-tab" data-tab="link">粘贴链接</span>
+                        </div>
+                        <textarea id="jdText" placeholder="粘贴目标岗位的JD内容...
+
+例如：
+职位：AI模型产品经理
+要求：
+- 3年以上互联网产品经验
+- 有AI模型训练数据产品经验"></textarea>
+                    </div>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="btn" id="optimizeBtn">🚀 生成匹配该岗位的专属简历</button>
+                    <div class="btn-desc">AI基于岗位要求，深度优化你的简历内容</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Page -->
+    <div class="page" id="resultPage">
+        <div class="container">
+            <div class="header">
+                <div class="logo">✨ 魔法简历 <span style="background:#f3f4f6;padding:4px 10px;border-radius:6px;font-size:12px;color:#6b7280;">AI模型产品经理</span></div>
+                <div class="header-right">
+                    <div class="score">匹配度 72%</div>
+                    <button class="btn-small">📥 下载</button>
+                    <button class="btn-small">📋 复制</button>
+                    <button class="btn-small" style="background:#667eea;color:white;">✏️ 二次编辑</button>
+                </div>
+            </div>
+            
+            <div class="main">
+                <div class="card">
+                    <div class="resume-header">
+                        <div class="resume-title">优化后简历</div>
+                        <div style="font-size:12px;color:#9ca3af;">
+                            <span style="margin-right:16px;"><span style="display:inline-block;width:8px;height:8px;background:#dcfce7;border-radius:2px;margin-right:4px;"></span>新增</span>
+                            <span><span style="display:inline-block;width:8px;height:8px;background:#dbeafe;border-radius:2px;margin-right:4px;"></span>修改</span>
+                        </div>
+                    </div>
+                    
+                    <div class="resume-content">
+                        <h3>刘浩宇 · 产品经理</h3>
+                        <p style="color:#6b7280;font-size:13px;">男 · 29岁 · 硕士 · 深圳 · 2年经验</p>
+                        
+                        <h3>工作经历</h3>
+                        <p><strong>腾讯科技 | CSIG | 产品经理</strong> <span style="color:#9ca3af">2020.11至今</span></p>
+                        <p style="margin-top:8px;">
+                            <span class="highlight highlight-mod">
+                                负责腾讯IOA零信任安全管理系统核心模块
+                                <span class="info-trigger mod" data-tooltip="tooltip1">i</span>
+                                <div class="tooltip-box">
+                                    <strong style="color:#60a5fa;">✏️ 修改说明</strong><br><br>
+                                    原文：负责产品需求管理和落地<br>
+                                    → 优化：作为核心模块负责人，主导从需求评估到版本上线的全流程管理<br><br>
+                                    <em style="color:#9ca3af;">对应JD：业务模块Owner</em>
+                                </div>
+                            </span>，该产品为千万级终端提供企业资源安全访问服务。
+                        </p>
+                        <p style="margin-top:8px;">
+                            <span class="highlight highlight-add">
+                                产品规划与迭代
+                                <span class="info-trigger add" data-tooltip="tooltip2">i</span>
+                                <div class="tooltip-box">
+                                    <strong style="color:#34d399;">✅ 新增内容</strong><br><br>
+                                    突出负责核心模块的经历，对应JD"模块Owner"要求
+                                </div>
+                            </span>：作为模块核心负责人，通过VOC机制累计分析处理超
+                            <span class="highlight highlight-add">1100+条需求
+                                <span class="info-trigger add" data-tooltip="tooltip3">i</span>
+                                <div class="tooltip-box">
+                                    <strong style="color:#34d399;">📊 量化数据</strong><br><br>
+                                    请核实此数据准确性，如需修改可直接编辑
+                                </div>
+                            </span>，构建需求评估模型...
+                        </p>
+                        
+                        <h3>核心能力</h3>
+                        <p>
+                            <span class="highlight highlight-add">
+                                1. 复杂产品系统管理能力
+                                <span class="info-trigger add">i</span>
+                                <div class="tooltip-box">
+                                    <strong style="color:#34d399;">💡 能力总结</strong><br><br>
+                                    将腾讯IOA的企业安全经验转化为复杂系统管理能力
+                                </div>
+                            </span>
+                        </p>
+                        <p style="color:#6b7280;margin-left:8px;margin-top:4px;">在腾讯负责企业级安全产品核心模块，具备全生命周期管理经验</p>
+                        
+                        <h3>教育背景</h3>
+                        <p>丹佛大学 · 计算机科学 · 硕士 · 2018-2020</p>
+                        <p>美国中央华盛顿大学 · 机械工程 · 学士 · 2013-2018</p>
+                    </div>
+                </div>
+                
+                <div class="sidebar">
+                    <div class="sidebar-card">
+                        <div class="sidebar-header"><h4>📊 匹配度</h4></div>
+                        <div class="sidebar-content">
+                            <div class="match-bars">
+                                <div class="match-bar matched"><div class="count">3</div><div class="label">已匹配</div></div>
+                                <div class="match-bar migratable"><div class="count">2</div><div class="label">可迁移</div></div>
+                                <div class="match-bar missing"><div class="count">2</div><div class="label">缺失</div></div>
+                            </div>
+                            <div class="match-tags">
+                                <span class="tag-item matched">✅ 产品规划</span>
+                                <span class="tag-item matched">✅ 数据分析</span>
+                                <span class="tag-item matched">✅ 协同</span>
+                                <span class="tag-item migratable">⚠️ 复杂系统</span>
+                                <span class="tag-item migratable">⚠️ B端</span>
+                                <span class="tag-item missing">❌ 可穿戴</span>
+                                <span class="tag-item missing">❌ A/B实验</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-card">
+                        <div class="sidebar-header"><h4>🎯 JD对照</h4></div>
+                        <div class="sidebar-content">
+                            <div class="jd-list">
+                                <div class="jd-item"><span>✅</span> 3年+互联网产品经验</div>
+                                <div class="jd-item"><span>✅</span> 数据敏感度</div>
+                                <div class="jd-item"><span>✅</span> 跨团队协调</div>
+                                <div class="jd-item"><span>⚠️</span> AI模型训练经验</div>
+                                <div class="jd-item"><span>❌</span> 可穿戴设备经验</div>
+                                <div class="jd-item"><span>❌</span> A/B实验经验</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-card">
+                        <div class="sidebar-header"><h4>💡 能力提升</h4></div>
+                        <div class="sidebar-content">
+                            <div class="scene2-grid">
+                                <div class="scene2-btn"><span class="icon">📚</span>了解行业</div>
+                                <div class="scene2-btn"><span class="icon">🎯</span>制定计划</div>
+                            </div>
+                            <div class="followup">💬 想调整某段？回复"细化腾讯经历"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab切换
+        const tabs = document.querySelectorAll('.jd-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+        
+        // Resume upload
+        const resumeUpload = document.getElementById('resumeUpload');
+        const resumeFileName = document.getElementById('resumeFileName');
+        let resumeFile = null;
+        
+        resumeUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            resumeUpload.style.borderColor = '#667eea';
+        });
+        
+        resumeUpload.addEventListener('dragleave', () => {
+            resumeUpload.style.borderColor = '#e0e0e0';
+        });
+        
+        resumeUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                handleResumeFile(file);
+            }
+        });
+        
+        resumeUpload.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.docx,.doc,.png,.jpg,.jpeg';
+            input.onchange = (e) => {
+                if (e.target.files[0]) {
+                    handleResumeFile(e.target.files[0]);
+                }
+            };
+            input.click();
+        });
+        
+        function handleResumeFile(file) {
+            const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg'];
+            if (validTypes.includes(file.type) || file.name.endsWith('.doc')) {
+                resumeFile = file;
+                resumeFileName.textContent = '✓ ' + file.name;
+            } else {
+                alert('不支持的格式，请上传 PDF、Word 或图片文件');
+            }
+        }
+        
+        // Optimize button
+        const optimizeBtn = document.getElementById('optimizeBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const progressBar = document.getElementById('progressBar');
+        const quoteText = document.getElementById('quoteText');
+        const homePage = document.getElementById('homePage');
+        const resultPage = document.getElementById('resultPage');
+        
+        const quotes = [
+            '"每一次投递都是一次机会，不要让简历成为阻碍。"',
+            '"最好的简历，是让面试官看到真实的你。"',
+            '"转型的过程，也是重新认识自己的过程。"',
+            '"经验是过去的，但能力是通用的。"',
+            '"机会总是留给有准备的人。"'
+        ];
+        
+        optimizeBtn.addEventListener('click', () => {
+            const jdText = document.getElementById('jdText').value;
+            if (!resumeFile && !jdText) {
+                alert('请上传简历或输入JD');
+                return;
+            }
+            
+            // Show loading
+            loadingOverlay.classList.add('show');
+            quoteText.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            // Simulate progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 90) progress = 90;
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 90) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingOverlay.classList.remove('show');
+                        progressBar.style.width = '0%';
+                        homePage.classList.remove('active');
+                        resultPage.classList.add('active');
+                    }, 1000);
+                }
+            }, 300);
+        });
+        
+        // Tooltips
+        const infoTriggers = document.querySelectorAll('.info-trigger');
+        infoTriggers.forEach(trigger => {
+            trigger.addEventListener('mouseenter', () => {
+                const tooltip = trigger.nextElementSibling;
+                if (tooltip && tooltip.classList.contains('tooltip-box')) {
+                    tooltip.style.display = 'block';
+                }
+            });
+            trigger.addEventListener('mouseleave', () => {
+                const tooltip = trigger.nextElementSibling;
+                if (tooltip && tooltip.classList.contains('tooltip-box')) {
+                    tooltip.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

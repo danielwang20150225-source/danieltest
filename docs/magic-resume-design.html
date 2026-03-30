@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>魔法简历 - 首页设计</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    .header { text-align: center; color: white; margin-bottom: 40px; }
+    .header h1 { font-size: 42px; margin-bottom: 12px; font-weight: 700; }
+    .header p { font-size: 18px; opacity: 0.9; }
+    .card { 
+      background: white; 
+      border-radius: 20px; 
+      padding: 40px; 
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      margin-bottom: 24px;
+    }
+    .card-title { 
+      font-size: 18px; 
+      font-weight: 600; 
+      color: #1a1a2e; 
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-title .icon { font-size: 24px; }
+    .upload-zone { 
+      border: 2px dashed #e0e0e0; 
+      border-radius: 12px; 
+      padding: 40px; 
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .upload-zone:hover { border-color: #667eea; background: #f8f7ff; }
+    .upload-zone .icon { font-size: 48px; margin-bottom: 16px; }
+    .upload-zone p { color: #666; font-size: 15px; }
+    .upload-zone .formats { font-size: 13px; color: #999; margin-top: 8px; }
+    textarea { 
+      width: 100%; 
+      height: 150px; 
+      border: 2px solid #e0e0e0; 
+      border-radius: 12px; 
+      padding: 16px; 
+      font-size: 14px;
+      resize: vertical;
+      font-family: inherit;
+    }
+    textarea:focus { outline: none; border-color: #667eea; }
+    textarea::placeholder { color: #999; }
+    .btn { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; 
+      border: none; 
+      padding: 16px 48px; 
+      font-size: 16px; 
+      font-weight: 600;
+      border-radius: 12px; 
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(102,126,234,0.4); }
+    .btn:active { transform: translateY(0); }
+    .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
+    .feature { text-align: center; padding: 16px; }
+    .feature .icon { font-size: 28px; margin-bottom: 8px; }
+    .feature p { font-size: 13px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>✨ 魔法简历</h1>
+      <p>让面试官认识真实的你，发现你的亮点</p>
+    </div>
+    
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">📄</span> 上传你的简历
+      </div>
+      <div class="upload-zone">
+        <div class="icon">📎</div>
+        <p>点击或拖拽文件到此处上传</p>
+        <div class="formats">支持 PDF、Word、图片格式</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">🎯</span> 粘贴目标岗位JD
+      </div>
+      <textarea placeholder="粘贴目标岗位的JD内容，例如：&#10;职位：AI模型产品经理&#10;要求：3年以上互联网产品经验..."></textarea>
+    </div>
+    
+    <button class="btn">🚀 开始AI优化</button>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="icon">🔍</div>
+        <p>智能匹配分析</p>
+      </div>
+      <div class="feature">
+        <div class="icon">✏️</div>
+        <p>专业内容优化</p>
+      </div>
+      <div class="feature">
+        <div class="icon">💡</div>
+        <p>差距认知提升</p>
+      </div>
+      <div class="feature">
+        <div class="icon">📚</div>
+        <p>能力成长方案</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

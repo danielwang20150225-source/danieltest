@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>魔法简历 - 分析页设计v2</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    
+    /* Header */
+    .header { 
+      background: white; 
+      padding: 16px 24px; 
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo { font-size: 18px; font-weight: 600; color: #1a1a2e; }
+    .logo span { color: #667eea; }
+    .tag { 
+      background: #f0f0f0; 
+      padding: 4px 10px; 
+      border-radius: 6px; 
+      font-size: 12px; 
+      color: #666;
+    }
+    .score-badge { 
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .score-badge .help { 
+      font-size: 14px; 
+      cursor: help; 
+      position: relative;
+    }
+    .score-badge .help:hover .tooltip { display: block; }
+    .score-badge .tooltip {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 8px;
+      background: #1a1a2e;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      width: 240px;
+      line-height: 1.5;
+      z-index: 100;
+      text-align: left;
+    }
+    
+    /* Main Grid */
+    .main { display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
+    
+    /* Left Card */
+    .left-card { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 24px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    /* Match Section */
+    .section { margin-bottom: 24px; }
+    .section-title { 
+      font-size: 15px; 
+      font-weight: 600; 
+      color: #1a1a2e; 
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .match-overview { 
+      display: flex; 
+      gap: 16px; 
+      margin-bottom: 20px;
+    }
+    .match-item { 
+      flex: 1;
+      padding: 16px; 
+      border-radius: 10px; 
+      text-align: center;
+      position: relative;
+    }
+    .match-item .count { font-size: 24px; font-weight: 700; }
+    .match-item .label { font-size: 13px; margin-top: 4px; }
+    .match-item .help-icon {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 14px;
+      cursor: help;
+      opacity: 0.5;
+    }
+    .match-item .help-icon:hover .tooltip { display: block; }
+    .match-item .tooltip {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 8px;
+      background: #1a1a2e;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      width: 200px;
+      z-index: 100;
+      text-align: left;
+      line-height: 1.5;
+    }
+    
+    .match-item.matched { background: #e8f5e9; }
+    .match-item.matched .count { color: #2e7d32; }
+    .match-item.migratable { background: #fff3e0; }
+    .match-item.migratable .count { color: #ef6c00; }
+    .match-item.missing { background: #ffebee; }
+    .match-item.missing .count { color: #c62828; }
+    
+    /* Tags */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { 
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px; 
+      border-radius: 16px; 
+      font-size: 13px;
+      position: relative;
+      cursor: help;
+    }
+    .tag .tooltip {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 6px;
+      background: #1a1a2e;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      width: 220px;
+      z-index: 100;
+      text-align: left;
+      line-height: 1.5;
+    }
+    .tag:hover .tooltip { display: block; }
+    
+    .tag.matched { background: #e8f5e9; color: #2e7d32; }
+    .tag.migratable { background: #fff3e0; color: #ef6c00; }
+    .tag.missing { background: #ffebee; color: #c62828; }
+    
+    /* Suggestions */
+    .suggestion-item { 
+      background: #f8f9fa; 
+      padding: 14px 16px; 
+      border-radius: 10px; 
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #333;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: help;
+    }
+    .suggestion-item .number { 
+      background: #667eea; 
+      color: white; 
+      width: 20px; 
+      height: 20px; 
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .suggestion-item .tooltip {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 8px;
+      background: #1a1a2e;
+      color: white;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      width: 300px;
+      z-index: 100;
+      text-align: left;
+      line-height: 1.6;
+    }
+    .suggestion-item:hover .tooltip { display: block; }
+    
+    .generate-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    /* Right Sidebar */
+    .sidebar { display: flex; flex-direction: column; gap: 16px; }
+    
+    .sidebar-card { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 20px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .sidebar-card h4 {
+      font-size: 14px;
+      color: #1a1a2e;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .jd-preview {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .jd-preview .highlight {
+      background: #fff3e0;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="logo">✨ 魔法简历 <span class="tag">AI模型产品经理</span></div>
+      </div>
+      <div class="score-badge">
+        匹配度 72%
+        <span class="help">?
+          <div class="tooltip">
+            匹配度 = (已匹配项 × 1.0 + 可迁移项 × 0.5) / 总JD要求项 × 100%
+            <br><br>
+            已匹配：完全符合JD要求
+            <br>
+            可迁移：需要包装后才能匹配
+            <br>
+            缺失：简历中完全未涉及
+          </div>
+        </span>
+      </div>
+    </div>
+    
+    <div class="main">
+      <!-- Left -->
+      <div class="left-card">
+        <!-- Match Overview -->
+        <div class="section">
+          <div class="section-title">📊 匹配度分析</div>
+          <div class="match-overview">
+            <div class="match-item matched">
+              <span class="help-icon">?
+                <div class="tooltip">简历中已有的技能/经验，与JD要求直接匹配</div>
+              </span>
+              <div class="count">3</div>
+              <div class="label">✅ 已匹配</div>
+            </div>
+            <div class="match-item migratable">
+              <span class="help-icon">?
+                <div class="tooltip">需要用目标行业语言重新包装，才能匹配的技能</div>
+              </span>
+              <div class="count">2</div>
+              <div class="label">⚠️ 可迁移</div>
+            </div>
+            <div class="match-item missing">
+              <span class="help-icon">?
+                <div class="tooltip">JD要求但简历中完全未涉及的技能/经验</div>
+              </span>
+              <div class="count">2</div>
+              <div class="label">❌ 缺失</div>
+            </div>
+          </div>
+          
+          <!-- Tags -->
+          <div class="tags">
+            <span class="tag matched">产品规划
+              <div class="tooltip">✅ 已匹配：简历中明确有"产品规划"相关经历</div>
+            </span>
+            <span class="tag matched">数据分析
+              <div class="tooltip">✅ 已匹配：简历中有量化成果和数据分析经历</div>
+            </span>
+            <span class="tag matched">跨团队协同
+              <div class="tooltip">✅ 已匹配：明确有跨部门协作经验</div>
+            </span>
+            <span class="tag migratable">复杂系统
+              <div class="tooltip">⚠️ 可迁移：企业安全系统 → 智能硬件系统</div>
+            </span>
+            <span class="tag migratable">B端经验
+              <div class="tooltip">⚠️ 可迁移：企业级产品 → 消费电子C端产品</div>
+            </span>
+            <span class="tag missing">可穿戴设备经验
+              <div class="tooltip">❌ 缺失：无直接可穿戴设备产品经验</div>
+            </span>
+            <span class="tag missing">A/B实验
+              <div class="tooltip">❌ 缺失：无A/B测试实验经验</div>
+            </span>
+          </div>
+        </div>
+        
+        <!-- Suggestions -->
+        <div class="section">
+          <div class="section-title">💡 优化建议</div>
+          
+          <div class="suggestion-item">
+            <span class="number">1</span>
+            <span>突出腾讯IOA的复杂系统管理经验，对应"模块Owner"要求</span>
+            <div class="tooltip">
+              <strong>示例：</strong>
+              <br>原文：负责产品需求管理和落地
+              <br>→ 优化：作为核心模块负责人，主导从需求评估到版本上线的全流程管理
+            </div>
+          </div>
+          
+          <div class="suggestion-item">
+            <span class="number">2</span>
+            <span>强化数据分析的量化成果，对应"数据驱动决策"要求</span>
+            <div class="tooltip">
+              <strong>示例：</strong>
+              <br>原文：通过数据分析优化产品
+              <br>→ 优化：通过需求漏斗分析，将需求转化率提升25%
+            </div>
+          </div>
+          
+          <div class="suggestion-item">
+            <span class="number">3</span>
+            <span>补充可穿戴设备行业知识，展现转型意愿</span>
+            <div class="tooltip">
+              <strong>建议：</strong>
+              <br>在核心能力中补充对可穿戴设备行业的理解
+            </div>
+          </div>
+          
+          <button class="generate-btn">✨ 生成匹配该岗位的专属简历</button>
+        </div>
+      </div>
+      
+      <!-- Right Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-card">
+          <h4>🎯 目标岗位JD</h4>
+          <div class="jd-preview">
+            <p><strong>职位：</strong>AI模型产品经理</p>
+            <p><strong>要求：</strong></p>
+            <p>• 3年以上互联网产品经验 <span class="highlight">✅ 已匹配</span></p>
+            <p>• 有AI模型训练数据产品经验 <span class="highlight">⚠️ 可迁移</span></p>
+            <p>• 具备数据敏感度 <span class="highlight">✅ 已匹配</span></p>
+            <p>• 沟通协调能力 <span class="highlight">✅ 已匹配</span></p>
+            <p>• 了解机器学习基本概念 <span class="highlight">❌ 缺失</span></p>
+          </div>
+        </div>
+        
+        <div class="sidebar-card">
+          <h4>📋 简历概要</h4>
+          <div class="jd-preview">
+            <p>刘浩宇 | 产品经理</p>
+            <p>29岁 | 硕士 | 深圳</p>
+            <p>2年经验 | 腾讯CSIG</p>
+            <p style="margin-top: 8px; color: #999; font-size: 12px;">点击开始优化后，将基于以上JD进行AI优化</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>魔法简历 - 首页设计v3</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+      min-height: 100vh;
+      padding: 40px;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 40px; }
+    .logo { font-size: 36px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+    .logo span { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .slogan { font-size: 16px; color: #666; }
+    
+    .main-card { 
+      background: white; 
+      border-radius: 20px; 
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 32px; }
+    
+    .input-col h3 { 
+      font-size: 16px; 
+      font-weight: 600; 
+      color: #1a1a2e; 
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .input-col h3 .icon { font-size: 20px; }
+    
+    /* JD Input Tabs */
+    .jd-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+    .jd-tab {
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 12px;
+      cursor: pointer;
+      background: #f0f0f0;
+      color: #666;
+      transition: all 0.2s;
+    }
+    .jd-tab.active { background: #667eea; color: white; }
+    
+    .upload-zone { 
+      border: 2px dashed #e0e0e0; 
+      border-radius: 12px; 
+      padding: 32px; 
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .upload-zone:hover { border-color: #667eea; background: #f8f7ff; }
+    .upload-zone .icon { font-size: 36px; margin-bottom: 12px; }
+    .upload-zone p { color: #666; font-size: 14px; }
+    .upload-zone .formats { font-size: 12px; color: #999; margin-top: 6px; }
+    
+    textarea { 
+      width: 100%; 
+      height: 180px; 
+      border: 2px solid #e0e0e0; 
+      border-radius: 12px; 
+      padding: 16px; 
+      font-size: 14px;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.6;
+    }
+    textarea:focus { outline: none; border-color: #667eea; }
+    textarea::placeholder { color: #999; }
+    
+    .link-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    .link-input:focus { outline: none; border-color: #667eea; }
+    
+    .ocr-hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #999;
+    }
+    .ocr-hint .icon { font-size: 16px; }
+    
+    .btn-row { padding: 0 32px 32px; }
+    .btn { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; 
+      border: none; 
+      padding: 18px 48px; 
+      font-size: 16px; 
+      font-weight: 600;
+      border-radius: 12px; 
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s;
+      display: block;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102,126,234,0.35); }
+    .btn:disabled { opacity: 0.7; cursor: wait; }
+    .btn-desc { text-align: center; font-size: 13px; color: #999; margin-top: 12px; }
+    
+    .features { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 16px; 
+      padding: 24px 32px;
+      background: #fafafa;
+      border-top: 1px solid #eee;
+    }
+    .feature { text-align: center; }
+    .feature .icon { font-size: 24px; margin-bottom: 6px; }
+    .feature p { font-size: 12px; color: #666; }
+    
+    /* Loading State */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: 1000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .loading-overlay.show { display: flex; }
+    
+    .loading-animation {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 32px;
+    }
+    
+    .loading-text {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 24px;
+    }
+    
+    .loading-progress {
+      width: 200px;
+      height: 4px;
+      background: #f0f0f0;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .loading-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      width: 0%;
+      transition: width 0.3s;
+    }
+    
+    .loading-quote {
+      max-width: 500px;
+      text-align: center;
+      padding: 24px;
+      background: #f8f9fa;
+      border-radius: 12px;
+    }
+    .loading-quote .text {
+      font-size: 18px;
+      color: #333;
+      font-style: italic;
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    .loading-quote .author {
+      font-size: 14px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">✨ <span>魔法简历</span></div>
+      <div class="slogan">一份匹配目标岗位的专属简历</div>
+    </div>
+    
+    <div class="main-card">
+      <div class="input-row">
+        <div class="input-col">
+          <h3><span class="icon">📄</span> 上传你的简历</h3>
+          <div class="upload-zone" id="resumeUpload">
+            <div class="icon">📎</div>
+            <p>点击或拖拽文件到此处</p>
+            <div class="formats">支持 PDF、Word、图片格式</div>
+          </div>
+        </div>
+        
+        <div class="input-col">
+          <h3><span class="icon">🎯</span> 目标岗位JD</h3>
+          
+          <div class="jd-tabs">
+            <span class="jd-tab active" data-tab="text">粘贴文字</span>
+            <span class="jd-tab" data-tab="link">粘贴链接</span>
+            <span class="jd-tab" data-tab="image">上传图片</span>
+          </div>
+          
+          <textarea id="jdText" placeholder="粘贴目标岗位的JD内容...
+
+例如：
+职位：AI模型产品经理
+要求：
+- 3年以上互联网产品经验
+- 有AI模型训练数据产品经验"></textarea>
+          
+          <input type="text" id="jdLink" class="link-input" style="display:none;" placeholder="粘贴JD链接，如：https://...">
+          
+          <div id="jdImage" style="display:none;">
+            <div class="upload-zone" style="padding: 20px;">
+              <div class="icon">🖼️</div>
+              <p>点击上传JD图片</p>
+              <div class="formats">自动OCR识别文字</div>
+            </div>
+          </div>
+          
+          <div class="ocr-hint">
+            <span class="icon">💡</span>
+            <span>支持多种输入方式，总有一种适合你</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-row">
+        <button class="btn" id="optimizeBtn">🚀 生成匹配该岗位的专属简历</button>
+        <div class="btn-desc">AI基于岗位要求，深度优化你的简历内容</div>
+      </div>
+      
+      <div class="features">
+        <div class="feature">
+          <div class="icon">🔍</div>
+          <p>智能匹配分析</p>
+        </div>
+        <div class="feature">
+          <div class="icon">✏️</div>
+          <p>专业内容优化</p>
+        </div>
+        <div class="feature">
+          <div class="icon">💡</div>
+          <p>差距认知提升</p>
+        </div>
+        <div class="feature">
+          <div class="icon">📚</div>
+          <p>能力成长方案</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-animation">✨</div>
+    <div class="loading-text">AI正在深度分析你的简历...</div>
+    <div class="loading-progress">
+      <div class="loading-progress-bar" id="progressBar"></div>
+    </div>
+    <div class="loading-quote">
+      <div class="text">"每一次投递都是一次机会，不要让简历成为阻碍。"</div>
+      <div class="author">—— 魔法简历</div>
+    </div>
+  </div>
+  
+  <script>
+    // Tab切换
+    const tabs = document.querySelectorAll('.jd-tab');
+    const jdText = document.getElementById('jdText');
+    const jdLink = document.getElementById('jdLink');
+    const jdImage = document.getElementById('jdImage');
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        jdText.style.display = 'none';
+        jdLink.style.display = 'none';
+        jdImage.style.display = 'none';
+        
+        if (tab.dataset.tab === 'text') jdText.style.display = 'block';
+        if (tab.dataset.tab === 'link') jdLink.style.display = 'block';
+        if (tab.dataset.tab === 'image') jdImage.style.display = 'block';
+      });
+    });
+    
+    // Loading
+    const btn = document.getElementById('optimizeBtn');
+    const overlay = document.getElementById('loadingOverlay');
+    const progressBar = document.getElementById('progressBar');
+    
+    const quotes = [
+      '"每一次投递都是一次机会，不要让简历成为阻碍。"',
+      '"最好的简历，是让面试官看到真实的你。"',
+      '"转型的过程，也是重新认识自己的过程。"',
+      '"经验是过去的，但能力是通用的。"',
+      '"机会总是留给有准备的人。"'
+    ];
+    
+    btn.addEventListener('click', () => {
+      overlay.classList.add('show');
+      
+      // 随机金句
+      const quoteText = quotes[Math.floor(Math.random() * quotes.length)];
+      document.querySelector('.loading-quote .text').textContent = quoteText;
+      
+      // 模拟进度（最多10秒）
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress >= 90) progress = 90;
+        progressBar.style.width = progress + '%';
+        
+        if (progress >= 90) {
+          clearInterval(interval);
+          // 10秒后自动进入下一页（或可以点击跳过）
+          setTimeout(() => {
+            overlay.classList.remove('show');
+            progressBar.style.width = '0%';
+          }, 1000);
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html>

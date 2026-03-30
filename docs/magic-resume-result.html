@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>魔法简历 - 结果页设计</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { 
+      background: white; 
+      padding: 20px 30px; 
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .header h1 { font-size: 20px; color: #1a1a2e; }
+    .score-badge { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .main { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
+    .resume-card { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 30px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .section-title { 
+      font-size: 16px; 
+      font-weight: 600; 
+      color: #1a1a2e; 
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .resume-content { font-size: 14px; line-height: 1.8; color: #333; }
+    .resume-content h3 { font-size: 16px; margin: 20px 0 10px; color: #1a1a2e; }
+    .highlight-add { background: #fef3e2; padding: 2px 4px; border-radius: 4px; }
+    .highlight-mod { background: #e3f2fd; padding: 2px 4px; border-radius: 4px; }
+    .highlight-del { background: #f5f5f5; padding: 2px 4px; border-radius: 4px; text-decoration: line-through; color: #999; }
+    .sidebar { display: flex; flex-direction: column; gap: 16px; }
+    .analysis-card { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 20px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .match-bar { 
+      height: 8px; 
+      background: #eee; 
+      border-radius: 4px; 
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .match-fill { 
+      height: 100%; 
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 4px;
+    }
+    .tag { 
+      display: inline-block;
+      padding: 4px 10px; 
+      border-radius: 12px; 
+      font-size: 12px;
+      margin: 4px;
+    }
+    .tag-match { background: #e8f5e9; color: #2e7d32; }
+    .tag-missing { background: #ffebee; color: #c62828; }
+    .tag-transfer { background: #fff3e0; color: #ef6c00; }
+    .action-btn { 
+      background: white; 
+      border: 2px solid #667eea; 
+      color: #667eea;
+      padding: 12px 20px; 
+      border-radius: 10px; 
+      cursor: pointer;
+      width: 100%;
+      font-weight: 600;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+    .action-btn:hover { background: #667eea; color: white; }
+    .action-btn.primary { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+    }
+    .action-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+    .legend { display: flex; gap: 16px; margin-bottom: 16px; font-size: 12px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+    .legend-dot.add { background: #fef3e2; }
+    .legend-dot.mod { background: #e3f2fd; }
+    .legend-dot.del { background: #f5f5f5; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>✨ 优化结果 - AI模型产品经理</h1>
+      <div class="score-badge">匹配度 72%</div>
+    </div>
+    
+    <div class="main">
+      <div class="resume-card">
+        <div class="section-title">
+          优化后的简历
+          <div class="legend" style="float: right;">
+            <div class="legend-item"><div class="legend-dot add"></div>新增</div>
+            <div class="legend-item"><div class="legend-dot mod"></div>修改</div>
+            <div class="legend-item"><div class="legend-dot del"></div>删除</div>
+          </div>
+        </div>
+        <div class="resume-content">
+          <h3>刘浩宇 | 产品经理</h3>
+          <p>男 | 29岁 | 硕士 | 深圳 | 2年经验</p>
+          
+          <h3>工作经历</h3>
+          <p><span class="highlight-mod">腾讯科技 | CSIG | 产品经理</span> | 2020.11-至今</p>
+          <p><span class="highlight-add">负责腾讯IOA零信任安全管理系统核心模块，该产品为千万级终端提供企业资源安全访问服务。</span></p>
+          <p>• <span class="highlight-add">产品规划与迭代</span>：作为模块核心负责人，通过VOC机制累计分析处理超1100条需求，构建需求评估模型...</p>
+          
+          <h3>核心能力总结</h3>
+          <p><span class="highlight-add">1. 复杂产品系统管理能力：在腾讯负责企业级安全产品核心模块，具备从需求洞察、规划到落地交付的全生命周期管理经验。</span></p>
+          <p><span class="highlight-add">2. 数据驱动与用户洞察潜力：具备通过多渠道反馈进行需求分析、漏斗评估的数据意识...</span></p>
+        </div>
+      </div>
+      
+      <div class="sidebar">
+        <div class="analysis-card">
+          <div class="section-title">匹配度分析</div>
+          <div class="match-bar"><div class="match-fill" style="width: 72%;"></div></div>
+          <p style="font-size: 13px; color: #666; margin-bottom: 12px;">72% 匹配度</p>
+          
+          <div style="margin-bottom: 12px;">
+            <p style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">✅ 已匹配</p>
+            <span class="tag tag-match">产品规划</span>
+            <span class="tag tag-match">数据分析</span>
+            <span class="tag tag-match">跨团队协同</span>
+          </div>
+          
+          <div style="margin-bottom: 12px;">
+            <p style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">⚠️ 可迁移</p>
+            <span class="tag tag-transfer">复杂系统</span>
+            <span class="tag tag-transfer">B端经验</span>
+          </div>
+          
+          <div>
+            <p style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">❌ 缺失</p>
+            <span class="tag tag-missing">可穿戴设备经验</span>
+            <span class="tag tag-missing">A/B实验</span>
+          </div>
+        </div>
+        
+        <div class="analysis-card">
+          <div class="section-title">继续优化</div>
+          <button class="action-btn">✏️ 细化某段经历</button>
+          <button class="action-btn">📝 调整表述</button>
+        </div>
+        
+        <div class="analysis-card">
+          <div class="section-title">能力提升</div>
+          <button class="action-btn">📚 了解可穿戴设备</button>
+          <button class="action-btn primary">🎯 制定行动计划</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

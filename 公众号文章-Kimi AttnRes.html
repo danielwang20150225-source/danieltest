@@ -1,0 +1,166 @@
+<h1>Kimi AttnRes - 打破Transformer的「潜规则」</h1>
+<p><span style="color: #888;">整理日期：2026-03-18 | 来源：WayToAGI 知识库 | 整理人：虾仁 🦐</span></p>
+<hr/>
+
+<h2>📌 核心结论</h2>
+<p><strong>Kimi提出的Attention Residuals（AttnRes）技术</strong>，通过在模型"层与层"之间引入注意力机制，让每一层可以"回头看"前面任意层的原始输出，而非只能看到经过层层混合的"大杂烩"。</p>
+<p>这是一个类似2017年Transformer颠覆RNN的历史性时刻——当年Transformer升级了"文本处理"的信息流，现在AttnRes升级了"深度方向"的信息流。</p>
+<p style="background: #f5f5f5; padding: 10px; border-radius: 5px;"><strong>实际效果：用同样的算力，性能提升相当于"白赚"25%。</strong></p>
+
+<h2>一、背景故事：马斯克都惊叹了</h2>
+<p>2026年3月，马斯克在推特上发文：「Impressive work from Kimi」。</p>
+<p><em>【图片1：马斯克推文截图 - 请手动插入】</em></p>
+<p>让他惊叹的不是什么花哨的应用，而是一篇关于<strong>残差连接</strong>的基础架构论文。</p>
+<p>这有多罕见？——残差连接自2015年ResNet提出以来，被当作"默认配置"用了整整十年，几乎没人想过要动它。</p>
+<p>而现在，两家中国AI实验室（DeepSeek和Kimi）在三个月内先后找到了突破口。</p>
+<p><em>【图片2：Kimi论文截图 - 请手动插入】</em></p>
+
+<h2>二、名词解释</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+<tr><th>术语</th><th>是什么</th><th>一句话理解</th></tr>
+<tr><td><strong>残差连接</strong></td><td>2015年ResNet论文提出的网络结构，让每一层的输出 = 上一层输出 + 这一层学到的新东西</td><td>像跑步接力赛，每棒选手不仅要跑自己的那一段，还要带着前面所有人的"接力棒"一起往前传</td></tr>
+<tr><td><strong>Transformer</strong></td><td>2017年划时代论文提出的架构，用注意力机制替代了之前的RNN</td><td>不像RNN那样只能一步步"硬记"，Transformer像有了"超能力"，可以随时翻阅之前的"笔记"</td></tr>
+<tr><td><strong>注意力机制</strong></td><td>一种让模型"选择性关注"信息的机制</td><td>像搜索引擎——你输入搜索词，系统匹配相关结果，返回最相关的内容</td></tr>
+<tr><td><strong>AttnRes</strong></td><td>Kimi提出的"注意力残差"技术，把注意力机制应用到层与层之间的信息传递上</td><td>像是给每层装了一部"时光电话"，可以随时Call回任意前面的层，直接要它当年的"原始工作成果"</td></tr>
+</table>
+
+<h2>三、传统残差的三个问题</h2>
+<h3>问题一：不能"点菜"</h3>
+<p>每一层只能看到上一层传下来的"混合状态"——所有前面层的输出被搅在一起的结果。</p>
+<ul>
+<li>有些层可能更需要早期的原始语义</li>
+<li>有些层可能更需要最近几层刚算出来的特征</li>
+</ul>
+<p>现在它们只能吃同一份混合好的"大杂烩"，没办法说"我要第3层的输出"。</p>
+
+<h3>问题二：信息找不回来</h3>
+<p>某一层学到了一个很有价值的东西，但一旦被混进累积状态，就和其他层的输出搅在一起了。随着后面的层不断叠加新输出，这个信息越来越淡，最终被淹没，不可逆。</p>
+
+<h3>问题三：后面的层越来越难产生影响</h3>
+<p><strong>比喻</strong>：想象你在一间越来越吵的房间里说话。</p>
+<p>前面的层已经积累了很大的信号，后面的层必须喊得比所有前辈加起来更大声，才能被听到。</p>
+<p>论文测量了这个效应：<strong>到了模型最后几层，信号量级是最开始的十多倍</strong>。后面的层要产生同等影响，需要付出十倍以上的"音量"。</p>
+<p><em>【图片3：信号量级对比图 - 请手动插入】</em></p>
+
+<h2>四、Kimi的解决方案：AttnRes</h2>
+<h3>4.1 核心思想</h3>
+<p>把处理文本的方式，迁移到处理"层"的方式上。</p>
+<blockquote>
+<p>2017年，Transformer升级了文本处理的信息流。</p>
+<p>2026年，AttnRes升级了深度方向的信息流。</p>
+</blockquote>
+
+<h3>4.2 具体怎么实现？</h3>
+<p>每一层可以"回头看"所有之前层的输出，然后根据当前处理的内容，<strong>动态决定</strong>最需要参考哪几层的结果。</p>
+<p><strong>关键点：</strong></p>
+<ol>
+<li><strong>"回头看"的权力</strong>：每层不再只能看上一层，而是可以看所有前面的层</li>
+<li><strong>动态权重</strong>：不是固定看某几层，而是根据当前输入的内容，决定此刻最需要调用哪些层的信息</li>
+<li><strong>精准调用</strong>：可以精确跳到任意前驱层的输出，不经过中间的"压缩链"</li>
+</ol>
+
+<h3>4.3 块间注意力机制</h3>
+<p>理想状态下，每一层都能直接回头看所有之前层（Full AttnRes）。但对于100多层的模型，这意味着要把所有层的输出都存着，<strong>内存吃不消</strong>。</p>
+<p><strong>工程折中方案：Block AttnRes</strong></p>
+<ul>
+<li>把所有层分成约8个"块"（每个块12层左右）</li>
+<li>块内：用标准残差做累加（保持梯度流动）</li>
+<li>块与块之间：用注意力机制（实现跨块查询）</li>
+</ul>
+<p><em>【图片4：AttnRes架构示意图 - 请手动插入】</em></p>
+
+<table border="1" cellpadding="5" cellspacing="0">
+<tr><th>方案</th><th>存什么</th><th>内存开销</th></tr>
+<tr><td>Full AttnRes</td><td>每一层的输出</td><td style="color: red;">极大</td></tr>
+<tr><td>Block AttnRes</td><td>每个块的汇总向量</td><td style="color: green;">可控</td></tr>
+</table>
+
+<h2>五、与DeepSeek mHC的对比</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+<tr><th></th><th>DeepSeek mHC</th><th>Kimi AttnRes</th></tr>
+<tr><td><strong>改了什么</strong></td><td>连接权重的学习方式</td><td>信息流的结构</td></tr>
+<tr><td><strong>权重是死是活</strong></td><td>训练完就固定</td><td>每次处理不同输入都不同</td></tr>
+<tr><td><strong>能看到什么</strong></td><td>只能看到上一层的混合状态</td><td>可以直接看所有之前层的原始输出</td></tr>
+<tr><td><strong>解决了什么</strong></td><td>权重太死板</td><td>不能点菜 + 后面层越来越难发声</td></tr>
+</table>
+<p><strong>本质差异：</strong></p>
+<ul>
+<li><strong>mHC</strong>：让混合方式更灵活了，但每条路拿到的还是混合过的状态</li>
+<li><strong>AttnRes</strong>：给每层装了"电话"，可以绕过混合，直接取原始数据</li>
+</ul>
+<p><em>【图片5：mHC vs AttnRes 对比图 - 请手动插入】</em></p>
+
+<h2>六、实验效果</h2>
+<h3>6.1 算力效率</h3>
+<p>用同样的算力，AttnRes达到了标准方法需要<strong>多烧25%算力</strong>才能达到的性能。</p>
+<p>换句话说： 不加机器、不加数据，只改信息流的结构，就能白赚25%的算力效果。</p>
+<p><em>【图片6：25%效果提升图 - 请手动插入】</em></p>
+
+<h3>6.2 下游任务提升</h3>
+<table border="1" cellpadding="5" cellspacing="0">
+<tr><th>任务</th><th>提升幅度</th></tr>
+<tr><td>GPQA-Diamond（研究生级科学推理）</td><td style="color: green;">36.9 → 44.2（+7.5）</td></tr>
+<tr><td>数学能力</td><td style="color: green;">53.5 → 57.1（+3.6）</td></tr>
+<tr><td>代码能力</td><td style="color: green;">59.1 → 62.2（+3.1）</td></tr>
+<tr><td>中文理解（C-Eval）</td><td style="color: green;">79.6 → 82.5（+2.9）</td></tr>
+</table>
+
+<h3>6.3 训练过程更健康</h3>
+<ul>
+<li>之前：每层信号量级单调递增，后面的层被淹没</li>
+<li>现在：每层信号保持有界范围，每层都能得到合理的学习信号</li>
+</ul>
+
+<h2>七、模型学到了什么？</h2>
+<p><em>【图片7：模型注意力模式可视化图 - 请手动插入】</em></p>
+<h3>发现一：大部分时候还是看最近的邻居</h3>
+<p>标准残差的"只看上一层"并不是完全错的，模型自己学出来的结果也是以邻近层为主。</p>
+
+<h3>发现二：最原始的输入一直没被丢掉</h3>
+<p>即使到了模型最深的层，对最开头输入的注意力权重都不是零。</p>
+<p><strong>标准残差下这个原始输入早就被稀释得找不到了，AttnRes让深层可以随时回头翻看它。</strong></p>
+
+<h3>发现三：模型自己发明了"捷径"</h3>
+<p>某些层会跳过中间，直接关注很早期的某些层。</p>
+<p>这不是人工设计的，是训练中模型自己发现的信息通路。</p>
+
+<h2>八、意义与展望</h2>
+<h3>8.1 为什么这很重要？</h3>
+<ol>
+<li><strong>十年没人敢碰的地方</strong>：残差连接被当作默认配置用了10年</li>
+<li><strong>重新开放"加深度"</strong>：以前模型不敢做太深（后面层学不到东西），AttnRes解决了这个问题，让"加深度"重新变成有效手段</li>
+<li><strong>不只是优化，是范式转变</strong>：从"宽而浅"最优，变成"窄而深"最优</li>
+</ol>
+
+<h3>8.2 下一步会往哪走？</h3>
+<ul>
+<li>随着硬件进步，会从Block AttnRes走向Full AttnRes</li>
+<li>可能会出现更激进的设计——完全去掉残差，全部用注意力</li>
+</ul>
+
+<h2>九、总结</h2>
+<blockquote style="background: #f5f5f5; padding: 15px; border-left: 4px solid #4CAF50;">
+<p><strong>一句话理解</strong></p>
+<p>给AI模型的每一层都装了一部可以随时"回头查资料"的电话，而且每次打给谁是根据当前任务动态决定的——就这么一个改动，性能白赚了25%。</p>
+</blockquote>
+
+<p><strong>记忆点</strong></p>
+<ul>
+<li>问题：传统残差"不能点菜、信息丢失、后面层被淹没"</li>
+<li>解法：块间注意力，跨块查询原始数据</li>
+<li>效果：同样算力，性能提升25%</li>
+<li>意义：2017年Transformer升级了文本处理，2026年AttnRes升级了深度处理</li>
+</ul>
+
+<hr/>
+<h2>📚 参考资料</h2>
+<ul>
+<li>公众号 花叔原文：<a href="https://mp.weixin.qq.com/s/BQNhy8vo1bMn5uNHyamYlQ">https://mp.weixin.qq.com/s/BQNhy8vo1bMn5uNHyamYlQ</a></li>
+<li>Attention Residuals技术报告：<a href="https://github.com/MoonshotAI/Attention-Residuals">https://github.com/MoonshotAI/Attention-Residuals</a></li>
+<li>DeepSeek mHC论文：<a href="https://arxiv.org/abs/2512.24880">https://arxiv.org/abs/2512.24880</a></li>
+<li>Kimi Linear架构报告：<a href="https://arxiv.org/abs/2510.26692">https://arxiv.org/abs/2510.26692</a></li>
+<li>Attention Is All You Need：<a href="https://arxiv.org/abs/1706.03762">https://arxiv.org/abs/1706.03762</a></li>
+</ul>
+
+<hr/>
+<p style="text-align: center; color: #888;">整理完成 🦐<br/>如有问题，欢迎讨论~</p>

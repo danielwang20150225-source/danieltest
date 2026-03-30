@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      padding: 40px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    .header h1 { font-size: 32px; margin-bottom: 10px; }
+    .header p { font-size: 14px; opacity: 0.9; }
+    .section { padding: 30px 40px; border-bottom: 1px solid #f0f0f0; }
+    .section:last-child { border-bottom: none; }
+    .section h2 {
+      font-size: 20px;
+      color: #667eea;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section h2 .num {
+      background: #667eea;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .section p { color: #666; line-height: 1.8; font-size: 14px; }
+    .highlight {
+      background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .card {
+      background: #f8f9ff;
+      border-radius: 12px;
+      padding: 15px;
+      border-left: 4px solid #667eea;
+    }
+    .card h3 {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .card p { font-size: 12px; color: #666; line-height: 1.6; }
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .tag {
+      background: #667eea;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+    .tag.orange { background: #f59e0b; }
+    .tag.green { background: #10b981; }
+    .tag.purple { background: #8b5cf6; }
+    .tag.red { background: #ef4444; }
+    .footer {
+      background: #1a1a2e;
+      color: white;
+      padding: 20px 40px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .footer a { color: #667eea; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🦞 OpenClaw 小龙虾</h1>
+      <p>开源个人AI助手 · 从入门到精通</p>
+    </div>
+    
+    <div class="section">
+      <h2><span class="num">1</span> 什么是 OpenClaw？</h2>
+      <p>一款开源个人AI助手，可以运行在本地设备上，通过集成 <span class="highlight">WhatsApp、Telegram、iMessage、Discord</span> 等聊天软件与用户对话。</p>
+      <p style="margin-top:10px;">它不只是"回答问题"，而是能 <span class="highlight">自己完成任务</span> —— 读取信息、处理内容、自动执行。</p>
+    </div>
+    
+    <div class="section">
+      <h2><span class="num">2</span> 核心架构</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>🔷 Gateway 网关</h3>
+          <p>负责与聊天平台通信，是整个系统的枢纽</p>
+        </div>
+        <div class="card">
+          <h3>🤖 Agent 智能体</h3>
+          <p>通过 AI 模型处理任务和对话，可接入 Claude、GPT、Deepseek</p>
+        </div>
+        <div class="card">
+          <h3>🛠️ Skills 技能模块</h3>
+          <p>扩展功能，如浏览器自动化、邮件处理、文件操作等</p>
+        </div>
+        <div class="card">
+          <h3>🧠 Memory 记忆系统</h3>
+          <p>持续记住用户对话内容、偏好设置，长期+短期记忆</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2><span class="num">3</span> 为什么这么火？</h2>
+      <div class="features">
+        <span class="tag">超强理解能力</span>
+        <span class="tag orange">超强创造力</span>
+        <span class="tag green">多任务处理</span>
+        <span class="tag purple">人性化对话</span>
+        <span class="tag red">自我改进</span>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2><span class="num">4</span> 支持渠道</h2>
+      <div class="features">
+        <span class="tag">WhatsApp</span>
+        <span class="tag orange">Telegram</span>
+        <span class="tag green">iMessage</span>
+        <span class="tag purple">Discord</span>
+        <span class="tag red">Slack</span>
+        <span class="tag">飞书</span>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2><span class="num">5</span> 应用场景</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>👤 个人AI助手</h3>
+          <p>随时通过聊天工具召唤，7×24小时在线</p>
+        </div>
+        <div class="card">
+          <h3>💼 办公自动化</h3>
+          <p>整理邮件、管理日程、处理工作内容</p>
+        </div>
+        <div class="card">
+          <h3>💻 产品开发</h3>
+          <p>完整前后端开发能力，如魔法简历项目</p>
+        </div>
+        <div class="card">
+          <h3>📚 学习辅助</h3>
+          <p>问答、知识查询、编程辅助</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>📖 官网：<a href="https://openclaw.ai">openclaw.ai</a> | 文档：<a href="https://docs.openclaw.ai">docs.openclaw.ai</a></p>
+      <p style="margin-top:5px;">📍 整理自：WaytoAGI 知识库</p>
+    </div>
+  </div>
+</body>
+</html>

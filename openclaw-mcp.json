@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "openclaw": {
+      "command": "node",
+      "args": ["C:\\Users\\danie\\.openclaw\\workspace\\mcp-server-openclaw.js"],
+      "env": {
+        "OPENCLAW_PORT": "18789"
+      }
+    }
+  }
+}
