@@ -582,6 +582,28 @@ URL → Jina(首选) → Scrapling(备选) → web_fetch(兜底)
 
 ---
 
+## ⚠️ Gateway 重启的正确方式 (2026-03-30)
+
+**问题**：`exec` 里调用 `openclaw gateway restart` = 杀掉 exec 自己的进程 → session 断连 → 跳登录页
+
+**根因**：Gateway 和 exec 共享进程树，直接 restart 会把 exec 也 kill 掉
+
+**正确方案**：用外部 watchdog 脚本（`scripts/gateway-watchdog.ps1`）通过 `schtasks` 重启，不走 exec 内部
+
+```powershell
+# ✅ 正确做法
+powershell -ExecutionPolicy Bypass -File "C:\Users\danie\.openclaw\workspace\scripts\gateway-watchdog.ps1"
+
+# ❌ 错误做法（会断 session）
+openclaw gateway restart
+```
+
+**Watchdog 脚本位置**：`C:\Users\danie\.openclaw\workspace\scripts\gateway-watchdog.ps1`
+
+**验证**：测试通过，gateway 重启后 exec 继续运行，session 不中断。
+
+---
+
 ## ⚠️ 深度复盘教训 (2026-03-24)
 
 ### 豆包生图API对比分析
