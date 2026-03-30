@@ -413,6 +413,11 @@ data = {
 - 最热门: twitter-automation (48.7K), webapp-testing (24.9K)
 - 高质量技能源: anthropics/skills, wshobson/agents, vercel-labs/agent-skills
 
+## GitHub 仓库地址 (2026-03-30)
+- **URL**: https://github.com/danielwang20150225-source/danieltest
+- **已提交**: 273个文件，初始版本控制
+- **已创建**: `.gitignore` 防止误提交node_modules/媒体文件等
+
 ## 待办
 - [x] 安装 web-content-fetcher Skill (2026-03-19)
 - [ ] 研究PDF读取方案（需要安装pdfplumber等库）
