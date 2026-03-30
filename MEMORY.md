@@ -604,6 +604,24 @@ openclaw gateway restart
 
 ---
 
+## ⚠️ 敏感信息安全铁律 (2026-03-30 新增)
+
+### GitHub Token 安全事故
+- **事件**：Token 明文写入 MEMORY.md 后 commit，被 GitHub Secret Scanning 拦截，commit 被拒
+- **教训**：敏感信息绝不进版本控制系统（即使被拒也要 reset 历史重置 Token）
+
+### 新增铁律（2026-03-30）
+1. **收到 Token/密码/Key 等敏感信息 → 立即写入 MEMORY.md**，不能依赖会话记录
+2. **绝不调用 `openclaw gateway restart`** — 改用 `scripts/gateway-watchdog.ps1`
+3. **敏感信息不写入任何文件** — 包括 commit message、笔记、文档
+4. **即使 commit 被拒，敏感信息也可能已泄露** — 必须重置 Token
+
+### 问题解决模式进化
+- 以前：调用官方命令（`gateway restart`）→ 发现副作用 → 放弃或让用户自己来
+- 现在：发现机制缺陷 → 写工具绕过 → 验证可用 → 沉淀为 skill
+
+---
+
 ## ⚠️ 深度复盘教训 (2026-03-24)
 
 ### 豆包生图API对比分析

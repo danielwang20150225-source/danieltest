@@ -61,3 +61,18 @@ web_scraper.jpg
 # Lock files (workspace only, not distributable)
 lock.json
 workspace-state.json
+
+# Temp test scripts (auto-generated, 2026-03-30)
+add_perm.ps1
+append_test.ps1
+discuss_feishu_cli.py
+feishu_api_write.py
+feishu_cli_guide_content.md
+test_chunk.ps1
+update_doc.ps1
+update_doc2.ps1
+write_all_chunks.ps1
+write_chunks.ps1
+write_doc.py
+write_doc_api.py
+write_feishu_doc.py
