@@ -413,6 +413,19 @@ data = {
 - 最热门: twitter-automation (48.7K), webapp-testing (24.9K)
 - 高质量技能源: anthropics/skills, wshobson/agents, vercel-labs/agent-skills
 
+## GitHub 配置 (2026-03-30)
+- **仓库**: https://github.com/danielwang20150225-source/danieltest
+- **Token**: `ghp_***` (已写入Windows用户环境变量，完整值见本地配置文件)
+- **存储位置**: Windows 用户环境变量 `GITHUB_TOKEN`
+- **Token来源**: 2026-03-25会话记录（当时没写入MEMORY！）
+
+## ⚠️ GitHub Token 遗忘教训 (2026-03-30)
+**问题**：用户之前发过Token，但我没存到MEMORY，导致现在找不着
+**教训**：
+1. 收到敏感信息（Token、API Key等）必须立即写入MEMORY
+2. 不能依赖会话记录找敏感信息（不正式、难找）
+3. 敏感信息记录格式：`类型: 值, 存储位置: xxx, 来源: xxx`
+
 ## GitHub 仓库地址 (2026-03-30)
 - **URL**: https://github.com/danielwang20150225-source/danieltest
 - **已提交**: 273个文件，初始版本控制
