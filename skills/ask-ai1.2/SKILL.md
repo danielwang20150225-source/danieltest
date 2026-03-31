@@ -1,47 +1,7 @@
 ---
-name: ask-ai1.2
+name: ask-ai
 description: |
-  让 AI 助手具备自主求助更强的 AI（大模型）解决问题的能力。
-
-  ## 这个 Skill 能解决啥问题？
-
-  ### 场景
-  当你遇到以下情况时，这个 Skill 会自动触发，让豆包/千问/Kimi/DeepSeek 来帮忙：
-  - 自己判断无法解决（知识盲区、技术栈不熟悉）
-  - 把握程度 < 50%（不确定方案是否可行）
-  - 需要用户手动配合（方案需要半自动执行）
-  - 用户质疑当前方案（推荐的方案被拒绝）
-  - 准备推荐退而求其次（觉得实现难度高想放弃）
-  - 遇到验证码/登录失效（自动化流程中断）
-
-  ### 价值
-  - 零门槛：不需要手动说"帮我问 AI"，触发后全自动执行
-  - Cookie 持久化：首次登录后无需重复登录，跨 session 保持
-  - 多 AI 降级：豆包 → 千问 → Kimi → DeepSeek，逐级切换
-  - 可复用：作为通用 Skill，可以给任何 OpenClaw Agent 使用
-
-  ## 设计思路
-
-  ### 核心逻辑
-  触发判断 → 选择 AI → 执行 6 步闭环 → 评估回答 → 追问/切换/完成
-
-  ### 6 步执行流程
-  1. 打开浏览器（--browser-profile openclaw）
-  2. 获取 snapshot（确认页面加载和登录状态）
-  3. 输入问题（使用模板格式化）
-  4. 发送
-  5. 轮询等待（每 10 秒一次，最多 7 次）
-  6. 获取回答 + 关闭标签页
-
-  ## 可能存在的问题
-  - 豆包未登录：首次使用需要手动登录，登录一次后 Cookie 持久化
-  - 轮询超时：AI 回复太慢（>70 秒）则自动切换下一个 AI
-  - 验证码拦截：AI 平台检测到自动化则告知用户手动输入验证码
-  - AI 都失败：所有平台都不可用则记录到 memory 并告知用户
-  - 回答质量差：AI 只给方向不给方案则最多追问 2 次，无效则切换
-
-  ## 联系方式
-  使用遇到问题请联系 Daniel：https://www.feishu.cn/invitation/page/add_contact/?token=c6au92d3-daf5-4d5c-bddc-8e41ed72342d&unique_id=QjQDn2aMcPV4gOivLveN2A==
+  当遇到难题时，自动求助豆包/千问/Kimi/DeepSeek等AI获取方案。
 
 ## 触发条件（满足任一即触发，无需询问用户）
 
@@ -75,6 +35,20 @@ description: |
 | Kimi | https://kimi.moonshot.cn | 备选 |
 | DeepSeek | https://www.deepseek.com | 备选 |
 
+### 【前置】组织问题（触发后立即执行，不等待浏览器）
+
+**时间**：打开浏览器之前必须完成
+
+**动作**：
+- 根据用户需求，在脑海中组织完整的问题内容
+- 使用「提问话术模板」格式化
+- 确保问题完整后再进行步骤1
+
+**禁止**：
+- ❌ 打开浏览器后才开始想问题
+- ❌ 在浏览器里等snapshot的时候组织问题
+- ❌ 边输入边想
+
 ### 执行步骤
 
 **步骤1：打开浏览器**
@@ -83,31 +57,23 @@ openclaw browser --browser-profile openclaw open <AI_URL>
 ```
 必须用 `--browser-profile openclaw`，禁止省略此参数。
 
-**步骤2：获取页面snapshot确认加载完成**
+**步骤2：获取snapshot + 确认登录**
 ```bash
 openclaw browser --browser-profile openclaw snapshot
 ```
+- 出现"登录"按钮 → 告知用户需要先登录，停止执行
+- 显示用户名或历史对话 → 已登录，继续步骤3
 
-**步骤3：检查是否已登录**
-- snapshot中出现"登录"按钮 → 告知用户需要先登录
-- snapshot中显示用户名或历史对话 → 已登录，继续下一步
-
-**步骤4：定位输入框并输入问题**
+**步骤3：输入已组织的问题 + 发送**
 ```bash
-# 点击textbox激活
+# 问题已在【前置】步骤组织完毕，打开浏览器后直接提交
 openclaw browser --browser-profile openclaw click <textbox_ref>
-# 输入问题
 openclaw browser --browser-profile openclaw type <textbox_ref> "<问题内容>"
-```
-使用下方「提问话术模板」格式化问题。
-
-**步骤5：发送**
-```bash
 openclaw browser --browser-profile openclaw press Enter
 ```
-或点击发送按钮（从snapshot中找到发送按钮ref并click）
+⚠️ 核心原则：前置步骤完成后，打开浏览器到提交控制在10秒内
 
-**步骤6：轮询等待响应**
+**步骤4：轮询等待响应**
 ```bash
 # 每10秒检查一次 snapshot，等待AI回复出现
 openclaw browser --browser-profile openclaw snapshot
@@ -116,12 +82,12 @@ openclaw browser --browser-profile openclaw snapshot
 - 最多轮询7次（70秒），超时则切换下一个AI
 - 发现验证码/登录要求 → 立即停止，告知用户
 
-**步骤7：获取回答内容**
+**步骤5：获取回答内容**
 - AI回复出现后，用snapshot获取完整内容
 - 提取关键答案，关闭标签页
 
-**步骤8：切换AI（如需要）**
-- 当前AI失败/超时 → 切换下一个AI，重复步骤1-7
+**步骤6：切换AI（如需要）**
+- 当前AI失败/超时 → 切换下一个AI，重复步骤1-5
 - 所有AI都失败 → 记录到memory，告知用户
 
 ### 提问话术模板
@@ -178,16 +144,15 @@ openclaw browser --browser-profile openclaw snapshot
 
 ---
 
-## 执行检查清单（6步必须完整执行）
+## 执行检查清单
 
+- [ ] 【前置】组织问题（在打开浏览器前完成，不等待）
 - [ ] 步骤1：打开浏览器（带 `--browser-profile openclaw`）
-- [ ] 步骤2：snapshot确认页面加载
-- [ ] 步骤3：检查登录状态
-- [ ] 步骤4：输入问题（用模板格式化）
-- [ ] 步骤5：发送
-- [ ] 步骤6：轮询等待响应（最多7次，每次间隔10秒）
-- [ ] 步骤7：获取回答，关闭标签页
-- [ ] 步骤8：评估回答有效性 → 决定执行/追问/切换
+- [ ] 步骤2：snapshot确认页面加载 + 检查登录状态
+- [ ] 步骤3：直接输入已组织的问题并发送
+- [ ] 步骤4：轮询等待响应（最多7次，每次间隔10秒）
+- [ ] 步骤5：获取回答，关闭标签页
+- [ ] 步骤6：评估回答有效性 → 决定执行/追问/切换
 
 ---
 
@@ -202,3 +167,4 @@ openclaw browser --browser-profile openclaw snapshot
 7. **告知用户**：所有AI都失败或遇到验证码时，明确告知状态
 8. **Cookie持久化**：使用 `--browser-profile openclaw`（持久化托管浏览器），这是最高优先级规则
 9. **轮询间隔**：统一使用10秒/次，不可在执行中更改
+10. **前置组织问题**：触发后立即在脑中组织问题，浏览器打开后直接提交，禁止在浏览器内等待或组织问题
